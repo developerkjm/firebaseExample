@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+  <head>
+  <meta charset="UTF-8">
+  <!-- 라이브러리는 하나만 추가하자!! -->
+  <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>    
+  <!-- <script src="https://www.gstatic.com/firebasejs/7.14.5/firebase-app.js"></script> 
+  <script src="https://www.gstatic.com/firebasejs/7.14.5/firebase-analytics.js"></script> -->
+    
+</head>
+  <h1>Firebase Test</h1>
+  <p>Firebase console에 데이터가 추가 되었는지 확인하세요</p>
+
+<script>
+  /*config 이름이 firebaseconfig로 되어있는데 원래의 config 이름으로 하고 값만 바꿔야 값이 나온다.*/
+  var config  = {
+    
+    apiKey: "AIzaSyCdhOW5dyO-xyDlNDMS1Sdt0nLwmKMc2_8",
+    authDomain: "setest-b5882.firebaseapp.com",
+    databaseURL: "https://setest-b5882.firebaseio.com",
+    projectId: "setest-b5882",
+    storageBucket: "setest-b5882.appspot.com",
+    messagingSenderId: "619014912969",
+    appId: "1:619014912969:web:4b489cf1989f464c8d0618",
+    measurementId: "G-RVTHWGL35P"
+  };
+  /* 1. firebase 접속*/
+  firebase.initializeApp(config);
+   
+  /* 3. 게시판에는 여러개의 게시물이 저장될 수 있기 때문에
+        각각의 데이터(행)을 구분하기 위해 Firebase에서 제공하는 고유의 값을 받는다.
+
+        firebase.database() : 데이터베이스에서 데이터를 읽거나 쓰려면 쓰인다.
+        ref() : 데이터베이스의 특정위치를 나타내며 해당 데이터베이스 위치에서 데이터를 읽거나 쓰는데 사용한다.
+        child('posts').push().key : push()를 사용하여 모든 사용자의 글을 포함하는 노드(/posts/)에 
+                                    글을 만드는 동시에 키를 검색합니다.        
+        
+  */
+ /* 여기서 계속 [firebase.database is not a function] 오류가 뜨면서 데이터베이스에 안들어감.
+    그래서 아래의 라이브러리를 추가해보았다.
+    <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-database.js">
+    <script src="https://www.gstatic.com/firebasejs/6.4.1/firebase-database.js">
+  */
+  var newPostKey = firebase.database().ref().child('posts').push().key;
+ 
+  /* 2.Firebase에서 제공하는 Realtime Database에 데이터를 저장한다.
+       데이터를 저장하기 위해 Json 형태로 데이터를 구성한다.
+  */
+  var postData = {
+    brdno: newPostKey,
+    brdwriter:"홍길동3",
+    brdtitle:"게시판 제목",
+    brdmemo:"게시물 내용",
+    brddate: Date.now()
+  };
+ 
+  /*게시물 목록과 사용자의 게시물 목록에 새 게시물 데이터를 동시에 작성한다.*/
+  var updates = {};
+  updates['/board/' + newPostKey] = postData;
+ 
+  /* 4. Firebase Realtime Database에 저장한다.*/
+  firebase.database().ref().update(updates);
+           
+</script>
